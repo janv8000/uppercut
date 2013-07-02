@@ -46,7 +46,7 @@
   </target>
 
   <target name="run_normal_tasks"
-          depends="error_check, zip, get_version, rename_zip_folder"
+          depends="error_check, get_version, zip, move_resulting_zip_to_destination"
           description="Zipping assemblies." />
 
   <target name="prepare">
@@ -64,9 +64,11 @@
   </target>
 
   <target name="zip">
-    <echo level="Warning" message="Attempting to zip up binaries to ${zip.file}." />
+    <property name="CFFA5C3F78FE47B98C8F04B43AFFEF2E" value="${dirs.drop}" />
+    <property name="CFFA5C3F78FE47B98C8F04B43AFFEF2E" value="${environment::get-variable('CCNetArtifactDirectory')}${path.separator}b${version.build}-r${version.revision}" if="${environment::variable-exists('CCNetArtifactDirectory')}" />
+    <echo level="Warning" message="Attempting to zip up binaries to ${zip.file}, contents = ${CFFA5C3F78FE47B98C8F04B43AFFEF2E}" />
     <zip zipfile="${zip.file}">
-      <fileset basedir="${dirs.drop}">
+      <fileset basedir="${CFFA5C3F78FE47B98C8F04B43AFFEF2E}">
         <exclude name="gems/**" />
         <exclude name="nuget/**" />
         <include name="**/*" />
@@ -110,9 +112,10 @@
     <echo level="Warning" message="Using build number ${version.build}." />
   </target>
 
-  <target name="rename_zip_folder">
-    <echo level="Warning" message="Renaming zip file ${zip.file} to ${zip.file.rename}." />
-    <move file="${zip.file}" tofile="${zip.file.rename}" />
+  <target name="move_resulting_zip_to_destination">
+    <property name="dirs.drop" value="${environment::get-variable('CCNetArtifactDirectory')}${path.separator}b${version.build}-r${version.revision}" if="${environment::variable-exists('CCNetArtifactDirectory')}" />
+    <echo level="Warning" message="Moving zip file ${zip.file} to ${dirs.drop}${path.separator}${project.name}.v${version}.zip." />
+    <move file="${zip.file}" tofile="${dirs.drop}${path.separator}${project.name}.v${version}.zip" />
   </target>
 
   <target name="load_uppercut_assemblies">
